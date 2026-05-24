@@ -1,5 +1,19 @@
 from django.contrib import admin
-from .models import DataRecord
+from .models import (
+    DataRecord, BKGazCurrentData, BKGazHourlyArchive, 
+    BKGazDailyArchive, BKGazMonthlyArchive, BKGazEmergencyArchive, 
+    BKGazVariableArchive
+)
+
+class FormattedTimestampMixin:
+    @admin.display(description='Vaqt', ordering='timestamp')
+    def formatted_timestamp(self, obj):
+        if getattr(obj, 'timestamp', None):
+            try:
+                return obj.timestamp.strftime('%Y-%m-%d %H:%M')
+            except AttributeError:
+                return obj.timestamp
+        return "-"
 
 @admin.register(DataRecord)
 class DataRecordAdmin(admin.ModelAdmin):
@@ -34,3 +48,45 @@ class DataRecordAdmin(admin.ModelAdmin):
         css = {
             'all': ('admin/css/forms.css',)
         }
+
+@admin.register(BKGazCurrentData)
+class BKGazCurrentDataAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'work_volume', 'std_volume', 'pressure', 'temperature', 'emergency_active', 'created_at')
+    list_filter = ('emergency_active', 'device_address', 'timestamp')
+    search_fields = ('device_address',)
+    ordering = ('-timestamp',)
+
+@admin.register(BKGazHourlyArchive)
+class BKGazHourlyArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'pressure', 'temperature', 'acc_work_vol', 'acc_std_vol')
+    list_filter = ('device_address', 'timestamp')
+    search_fields = ('device_address',)
+    ordering = ('-timestamp',)
+
+@admin.register(BKGazDailyArchive)
+class BKGazDailyArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'work_vol', 'std_vol', 'acc_work_vol', 'acc_std_vol')
+    list_filter = ('device_address', 'timestamp')
+    search_fields = ('device_address',)
+    ordering = ('-timestamp',)
+
+@admin.register(BKGazMonthlyArchive)
+class BKGazMonthlyArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'work_vol', 'std_vol', 'acc_work_vol', 'acc_std_vol')
+    list_filter = ('device_address', 'timestamp')
+    search_fields = ('device_address',)
+    ordering = ('-timestamp',)
+
+@admin.register(BKGazEmergencyArchive)
+class BKGazEmergencyArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'code_word', 'changed', 'value')
+    list_filter = ('changed', 'device_address', 'code_word')
+    search_fields = ('device_address',)
+    ordering = ('-created_at',)
+
+@admin.register(BKGazVariableArchive)
+class BKGazVariableArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
+    list_display = ('device_address', 'formatted_timestamp', 'gas_density', 'baro_pressure', 'max_flow', 'min_flow')
+    list_filter = ('device_address', 'timestamp')
+    search_fields = ('device_address',)
+    ordering = ('-timestamp',)
