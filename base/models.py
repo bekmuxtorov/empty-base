@@ -13,7 +13,11 @@ class DataRecord(models.Model):
     battery = models.FloatField(default=0, verbose_name="Battery")
     status = models.CharField(max_length=30, default="online", verbose_name="Status")
     
-    timestamp = models.DateTimeField(verbose_name="Timestamp")
+    archive_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="Archive Type")
+    raw_hex = models.TextField(blank=True, null=True, verbose_name="Raw Hex")
+    message = models.TextField(blank=True, null=True, verbose_name="Message")
+    
+    timestamp = models.DateTimeField(null=True, blank=True, verbose_name="Timestamp")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")
 
     class Meta:
@@ -22,7 +26,7 @@ class DataRecord(models.Model):
         ordering = ['-timestamp']
 
     def __str__(self):
-        return f"Device {self.device_id} - {self.timestamp}"
+        return f"Device {self.device_id} - {self.timestamp if self.timestamp else 'No Timestamp'}"
 
 class BKGazCurrentData(models.Model):
     device_address = models.CharField(max_length=50, verbose_name="Qurilma manzili")

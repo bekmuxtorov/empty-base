@@ -49,3 +49,24 @@ class DataRecordAPITest(TestCase):
         response = self.client.delete(delete_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(DataRecord.objects.count(), 0)
+
+    def test_create_no_response_record(self):
+        no_response_payload = {
+            "device_id": "DEV-002",
+            "meter_id": "MTR-5555",
+            "phone": "+998901644101",
+            "archive_type": "daily",
+            "raw_hex": "",
+            "status": "meter_no_response",
+            "message": "Schotchik javob bermadi"
+        }
+        response = self.client.post(self.url, no_response_payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(DataRecord.objects.count(), 1)
+        record = DataRecord.objects.get()
+        self.assertEqual(record.device_id, "DEV-002")
+        self.assertEqual(record.status, "meter_no_response")
+        self.assertEqual(record.message, "Schotchik javob bermadi")
+        self.assertEqual(record.archive_type, "daily")
+        self.assertEqual(record.raw_hex, "")
+        self.assertIsNone(record.timestamp)

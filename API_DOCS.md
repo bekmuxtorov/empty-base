@@ -25,6 +25,8 @@ Qurilmadan serverga yangi ma'lumot yuborish.
 
 *   **URL**: `/api/records/`
 *   **Method**: `POST`
+
+### Standart holat (online):
 *   **Request Body**:
 ```json
 {
@@ -38,6 +40,21 @@ Qurilmadan serverga yangi ma'lumot yuborish.
   "battery": 88.0,
   "status": "online",
   "timestamp": "2024-03-28T21:05:00Z"
+}
+```
+*   **Response**: `201 Created`
+
+### Schotchik javob bermagan holat (no response):
+*   **Request Body**:
+```json
+{
+  "device_id": "DEV-002",
+  "meter_id": "MTR-5555",
+  "phone": "+998901644101",
+  "archive_type": "daily",
+  "raw_hex": "",
+  "status": "meter_no_response",
+  "message": "Schotchik javob bermadi"
 }
 ```
 *   **Response**: `201 Created`
@@ -84,8 +101,11 @@ Ma'lumotlar bazasidan yozuvni olib tashlash.
 | `volume` | Float | Hajm ko'rsatkichi (Standart: 0) |
 | `signal` | Integer | Signal kuchi (%) |
 | `battery` | Float | Batareya quvvati (%) |
-| `status` | String | Qurilma holati (online/offline) |
-| `timestamp` | DateTime| Qurilmada qayd etilgan vaqt (ISO format) |
+| `status` | String | Qurilma holati (masalan, `online`, `offline`, `meter_no_response`) |
+| `archive_type` | String | So'ralgan arxiv turi (masalan, `daily`, `hourly`) |
+| `raw_hex` | String | Qurilmadan olingan xom hex ma'lumoti |
+| `message` | String | Xatolik yoki holat haqidagi batafsil xabar (masalan, `Schotchik javob bermadi`) |
+| `timestamp` | DateTime| Qurilmada qayd etilgan vaqt (ISO format, offline/no-response holatlarida ixtiyoriy) |
 | `created_at` | DateTime| Serverga kelib tushgan vaqt (Avtomatik) |
 
 ---

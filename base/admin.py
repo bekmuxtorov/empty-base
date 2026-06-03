@@ -17,10 +17,10 @@ class FormattedTimestampMixin:
 
 @admin.register(DataRecord)
 class DataRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'device_id', 'meter_id', 'status', 'pressure', 'temperature', 'volume', 'battery', 'signal', 'timestamp')
+    list_display = ('id', 'device_id', 'meter_id', 'status', 'archive_type', 'pressure', 'temperature', 'volume', 'battery', 'signal', 'timestamp')
     list_display_links = ('id', 'device_id')
-    search_fields = ('device_id', 'meter_id', 'phone', 'status')
-    list_filter = ('status', 'device_id', 'timestamp')
+    search_fields = ('device_id', 'meter_id', 'phone', 'status', 'archive_type', 'message', 'raw_hex')
+    list_filter = ('status', 'archive_type', 'device_id', 'timestamp')
     ordering = ('-timestamp', '-created_at')
     
     fieldsets = (
@@ -33,8 +33,8 @@ class DataRecordAdmin(admin.ModelAdmin):
             'description': 'Actual measurement values.'
         }),
         ('Technical Status', {
-            'fields': (('signal', 'battery'), 'status'),
-            'description': 'Current signal strength, battery level, and status.'
+            'fields': (('signal', 'battery'), 'status', 'archive_type', 'message', 'raw_hex'),
+            'description': 'Current signal strength, battery level, status, archive type, error messages, and raw hex.'
         }),
         ('Time Stamps', {
             'fields': ('timestamp', 'created_at'),
