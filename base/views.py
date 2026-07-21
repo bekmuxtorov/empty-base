@@ -6,12 +6,13 @@ import math
 from .models import (
     DataRecord, BKGazCurrentData, BKGazHourlyArchive, 
     BKGazDailyArchive, BKGazMonthlyArchive, BKGazEmergencyArchive, 
-    BKGazVariableArchive
+    BKGazVariableArchive, RawArchiveBatch, RawPacketDetail
 )
 from .serializers import (
     DataRecordSerializer, BKGazCurrentDataSerializer, BKGazHourlyArchiveSerializer,
     BKGazDailyArchiveSerializer, BKGazMonthlyArchiveSerializer, 
-    BKGazEmergencyArchiveSerializer, BKGazVariableArchiveSerializer
+    BKGazEmergencyArchiveSerializer, BKGazVariableArchiveSerializer,
+    RawArchiveBatchSerializer
 )
 
 class DataRecordViewSet(viewsets.ModelViewSet):
@@ -160,3 +161,9 @@ class BKGazDataIngestView(APIView):
                 )
 
         return Response({"status": "success", "message": "Ma'lumotlar muvaffaqiyatli saqlandi."}, status=status.HTTP_201_CREATED)
+
+
+class RawArchiveBatchViewSet(viewsets.ModelViewSet):
+    queryset = RawArchiveBatch.objects.all()
+    serializer_class = RawArchiveBatchSerializer
+

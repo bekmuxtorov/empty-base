@@ -159,3 +159,38 @@ class BKGazVariableArchive(models.Model):
 
     def __str__(self):
         return f"{self.device_address} - {self.timestamp}"
+
+
+class RawArchiveBatch(models.Model):
+    device_id = models.CharField(max_length=100, verbose_name="Qurilma ID")
+    meter_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Hisoblagich ID")
+    archive_type = models.CharField(max_length=50, blank=True, null=True, verbose_name="Arxiv turi")
+    start_address = models.CharField(max_length=50, blank=True, null=True, verbose_name="Boshlang'ich manzil")
+    end_address = models.CharField(max_length=50, blank=True, null=True, verbose_name="Yakuniy manzil")
+    packet_count = models.IntegerField(verbose_name="Paketlar soni")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
+
+    class Meta:
+        verbose_name = "Xom Paket To'plami"
+        verbose_name_plural = "Xom Paket To'plamlari"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Batch {self.id} (Device: {self.device_id}, Meter: {self.meter_id})"
+
+
+class RawPacketDetail(models.Model):
+    batch = models.ForeignKey(RawArchiveBatch, on_delete=models.CASCADE, related_name='packets', verbose_name="To'plam")
+    sequence_number = models.IntegerField(verbose_name="Tartib raqami")
+    packet_hex = models.TextField(verbose_name="Xom paket (Hex)")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
+
+    class Meta:
+        verbose_name = "Xom Paket"
+        verbose_name_plural = "Xom Paketlar"
+        ordering = ['batch', 'sequence_number']
+        unique_together = ('batch', 'sequence_number')
+
+    def __str__(self):
+        return f"Batch {self.batch_id} - Packet #{self.sequence_number}"
+

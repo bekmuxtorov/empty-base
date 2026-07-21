@@ -177,3 +177,86 @@ Ma'lumotlar turiga qarab alohida REST API manzillari mavjud. Bu manzillarda `GET
 ```
 
 > **Eslatma**: Dastlab o'qish API'lari faqat o'qish uchun mo'ljallangan edi, lekin hozir ularning barchasi `ModelViewSet` ga o'zgartirildi. Ya'ni siz `/bkgaz/current/`, `/bkgaz/hourly/` kabi manzillarga to'g'ridan-to'g'ri `POST`, `PUT`, `PATCH`, `DELETE` so'rovlarini yuborib, alohida jadvallarga bitta-bitta obyekt qo'shishingiz, tahrirlashingiz yoki o'chirishingiz ham mumkin.
+
+---
+
+# Xom Hex Paketlarini Ingest Qilish API
+
+Ushbu bo'limda qurilmadan keladigan xom hex paketlarini to'plam (batch) ko'rinishida yuborish va bazada normalized holda saqlash uchun API tavsifi berilgan.
+
+## 1. Paket to'plamini yuborish (Ingest)
+
+*   **URL**: `/api/raw-packets/`
+*   **Method**: `POST`
+*   **Headers**: `Content-Type: application/json`
+*   **Request Body**:
+```json
+{
+  "device_id": "DEV-002",
+  "meter_id": "MTR-5555",
+  "archive_type": "monthly",
+  "start_address": "6086",
+  "end_address": "6279",
+  "raw_packets": [
+    "%1600000816000000002D",
+    "%16000000000495F02957",
+    "%1604936D94000008175D"
+  ],
+  "packet_count": 3
+}
+```
+
+*   **Muvaffaqiyatli Javob (201 Created)**:
+```json
+{
+  "id": 1,
+  "device_id": "DEV-002",
+  "meter_id": "MTR-5555",
+  "archive_type": "monthly",
+  "start_address": "6086",
+  "end_address": "6279",
+  "packet_count": 3,
+  "packets": [
+    {
+      "id": 1,
+      "sequence_number": 1,
+      "packet_hex": "%1600000816000000002D",
+      "created_at": "2026-07-21T09:39:24.123456Z"
+    },
+    {
+      "id": 2,
+      "sequence_number": 2,
+      "packet_hex": "%16000000000495F02957",
+      "created_at": "2026-07-21T09:39:24.125678Z"
+    },
+    {
+      "id": 3,
+      "sequence_number": 3,
+      "packet_hex": "%1604936D94000008175D",
+      "created_at": "2026-07-21T09:39:24.127890Z"
+    }
+  ],
+  "created_at": "2026-07-21T09:39:24.121234Z"
+}
+```
+
+*   **Xatolik Javobi (400 Bad Request)** (agar `raw_packets` ro'yxati uzunligi `packet_count` ga mos kelmasa):
+```json
+{
+  "packet_count": [
+    "Paketlar soni (3) packet_count (5) ga mos kelmaydi."
+  ]
+}
+```
+
+## 2. Saqlangan paket to'plamlarini o'qish (Read)
+
+*   **URL**: `/api/raw-packets/`
+*   **Method**: `GET`
+*   **Response**: `200 OK`
+
+*   **Bitta to'plam tafsilotlarini ko'rish**:
+    *   **URL**: `/api/raw-packets/{id}/`
+    *   **Method**: `GET`
+    *   **Response**: `200 OK`
+

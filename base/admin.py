@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     DataRecord, BKGazCurrentData, BKGazHourlyArchive, 
     BKGazDailyArchive, BKGazMonthlyArchive, BKGazEmergencyArchive, 
-    BKGazVariableArchive
+    BKGazVariableArchive, RawArchiveBatch, RawPacketDetail
 )
 
 class FormattedTimestampMixin:
@@ -90,3 +90,30 @@ class BKGazVariableArchiveAdmin(admin.ModelAdmin, FormattedTimestampMixin):
     list_filter = ('device_address', 'timestamp')
     search_fields = ('device_address',)
     ordering = ('-timestamp',)
+
+
+class RawPacketDetailInline(admin.TabularInline):
+    model = RawPacketDetail
+    extra = 0
+    ordering = ('sequence_number',)
+    readonly_fields = ('sequence_number', 'packet_hex', 'created_at')
+
+
+@admin.register(RawArchiveBatch)
+class RawArchiveBatchAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'device_id', 'meter_id', 'archive_type', 
+        'start_address', 'end_address', 'packet_count', 'created_at'
+    )
+    list_filter = ('archive_type', 'device_id', 'created_at')
+    search_fields = ('device_id', 'meter_id')
+    ordering = ('-created_at',)
+    inlines = [RawPacketDetailInline]
+
+
+@admin.register(RawPacketDetail)
+class RawPacketDetailAdmin(admin.ModelAdmin):
+    list_display = ('id', 'batch', 'sequence_number', 'packet_hex', 'created_at')
+    list_filter = ('batch__device_id', 'batch__archive_type')
+    search_fields = ('packet_hex', 'batch__device_id', 'batch__meter_id')
+    ordering = ('batch', 'sequence_number')

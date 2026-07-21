@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     DataRecordViewSet, BKGazDataIngestView, BKGazCurrentDataViewSet,
     BKGazHourlyArchiveViewSet, BKGazDailyArchiveViewSet, BKGazMonthlyArchiveViewSet,
-    BKGazEmergencyArchiveViewSet, BKGazVariableArchiveViewSet
+    BKGazEmergencyArchiveViewSet, BKGazVariableArchiveViewSet,
+    RawArchiveBatchViewSet
 )
 
 router = DefaultRouter()
@@ -14,6 +15,7 @@ router.register(r'bkgaz/daily', BKGazDailyArchiveViewSet, basename='bkgaz-daily'
 router.register(r'bkgaz/monthly', BKGazMonthlyArchiveViewSet, basename='bkgaz-monthly')
 router.register(r'bkgaz/emergency', BKGazEmergencyArchiveViewSet, basename='bkgaz-emergency')
 router.register(r'bkgaz/variable', BKGazVariableArchiveViewSet, basename='bkgaz-variable')
+router.register(r'raw-packets', RawArchiveBatchViewSet, basename='raw-packets')
 
 urlpatterns = [
     path('bkgaz/ingest/', BKGazDataIngestView.as_view(), name='bkgaz-ingest'),
